@@ -1,0 +1,70 @@
+---
+title: "Get current user"
+description: "Retrieve the authenticated user's information from a JWT token."
+---
+
+<Badge color="blue">GET</Badge> `/api/user`
+
+Verifies the Bearer token from the `Authorization` header and returns the username embedded in the JWT payload.
+
+## Authentication
+
+Pass your JWT token as a Bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer <jwt_token>
+```
+
+## Request headers
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. Format: `Bearer <jwt_token>`.
+</ParamField>
+
+## Response
+
+**200 OK**
+
+<ResponseField name="username" type="string">
+  The username extracted from the JWT payload's `username` field.
+</ResponseField>
+
+## Error responses
+
+| Status | Body                                    | Description |
+| ------ | --------------------------------------- | ----------- |
+| 401    | `{ "message": "Invalid token" }`        | Token is expired, malformed, or signed with a different key |
+| 401    | `{ "message": "Token required" }`       | No `Authorization` header was provided |
+| 405    | `{ "message": "Method not allowed" }`   | Request was not `GET` |
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl http://localhost:3000/api/user \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+```js axios
+import axios from 'axios';
+const token = localStorage.getItem('token');
+const response = await axios.get('/api/user', {
+  headers: { Authorization: `Bearer ${token}` }
+});
+// response.data.username
+```
+
+</CodeGroup>
+
+## Example response
+
+```json 200
+{
+  "username": "user@example.com"
+}
+```
+
+<Note>
+  This endpoint verifies the JWT signature using the server's `SECRET_KEY`. You can use it for server-side token validation — if the request returns 200, the token is genuine and has not expired.
+</Note>

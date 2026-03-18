@@ -1,97 +1,77 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Glint 247 — Hub For Creative Minds"
+description: "A professional networking platform that connects creative professionals, empowers career growth, and builds meaningful communities."
 ---
 
-## Setting up
-
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/quickstart">
+    Create your account and set up your professional profile in minutes.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Core Features" icon="star" href="/features/authentication">
+    Explore authentication, onboarding, and your personalized dashboard.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Guides" icon="book" href="/guides/local-development">
+    Deploy Glint 247 locally or to production with step-by-step guides.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="API Reference" icon="code" href="/api/auth/register">
+    Integrate with Glint 247's REST API for authentication and user data.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## What is Glint 247?
 
-Everything you need to create world-class documentation.
+Glint 247 is a professional networking platform designed for creative minds. Whether you're a designer, developer, writer, or any other creative professional, Glint 247 helps you connect with peers, discover opportunities, and grow your career.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+<Info>
+  Glint 247 is built with Next.js 14, React 18, and Tailwind CSS — making it fast, modern, and easy to extend.
+</Info>
 
-## Need inspiration?
+## Platform overview
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<CardGroup cols={3}>
+  <Card title="Create an account" icon="user-plus" href="/features/authentication">
+    Register with your email and a secure password to join the Glint 247 community.
+  </Card>
+  <Card title="Complete your profile" icon="id-card" href="/features/onboarding">
+    A guided two-step onboarding flow collects your name and location to personalize your experience.
+  </Card>
+  <Card title="Access your dashboard" icon="gauge" href="/features/dashboard">
+    Navigate to your profile, settings, messages, and analytics from one central hub.
+  </Card>
+</CardGroup>
+
+## Key capabilities
+
+- **Secure authentication** — JWT-based login and registration with bcrypt password hashing
+- **Guided onboarding** — Multi-step flow that personalizes your profile right after sign-up
+- **Protected routes** — Automatic redirect to login for unauthenticated users
+- **Interactive landing page** — Swipeable carousel showcasing the platform with calls to action
+- **Responsive design** — Fully mobile-friendly layout powered by Tailwind CSS
+
+## Technology stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| UI Library | React 18 |
+| Styling | Tailwind CSS |
+| Authentication | JWT (jsonwebtoken) + bcryptjs |
+| HTTP Client | Axios |
+| Carousel | Swiper + react-swipeable |
+
+## Quick links
+
+<CardGroup cols={2}>
+  <Card title="Quickstart guide" icon="bolt" href="/quickstart">
+    Get from zero to a running account in under 5 minutes.
+  </Card>
+  <Card title="Authentication flow" icon="lock" href="/features/authentication">
+    Understand how registration, login, and session management work.
+  </Card>
+  <Card title="Local development" icon="laptop-code" href="/guides/local-development">
+    Run Glint 247 on your machine for development and testing.
+  </Card>
+  <Card title="REST API" icon="server" href="/api/auth/register">
+    Explore the full API reference for all available endpoints.
+  </Card>
+</CardGroup>

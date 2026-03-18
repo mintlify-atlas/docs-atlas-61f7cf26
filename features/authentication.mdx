@@ -1,0 +1,159 @@
+---
+title: "Authentication"
+description: "How Glint 247 handles user registration, login, and session management."
+---
+
+Glint 247 uses JSON Web Tokens (JWT) for authentication, bcryptjs for password hashing, and `localStorage` for client-side session management. The `ProtectedRoute` component guards every page that requires an authenticated user.
+
+## Registration flow
+
+<Steps>
+  <Step title="Fill in your credentials">
+    Navigate to `/join` and enter your email address and a password of at least 8 characters. You can toggle password visibility with the eye icon. Check **Remember me** if you want the browser to retain your session indicator.
+  </Step>
+  <Step title="Submit the form">
+    Click **Agree & Join**. The form `POST`s `{ username, password }` to `/api/auth/register`.
+
+    ```js register.js
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const token = jwt.sign({ username: username }, SECRET_KEY, { expiresIn: '1h' });
+    res.status(201).json({ token, password: hashedPassword });
+    ```
+
+    The API hashes your password with bcrypt (12 salt rounds) and signs a JWT that expires in one hour.
+  </Step>
+  <Step title="Token and profile stored">
+    On a successful response the client stores the JWT and saves your profile to `localStorage`:
+
+    ```js JoinForm.js
+    setToken(resp.data.token)
+    localStorage.setItem(email, JSON.stringify({
+      username: email,
+      password: resp.data.password,  // bcrypt hash
+    }))
+    ```
+  </Step>
+  <Step title="Redirect to onboarding">
+    You are sent to `/onboarding/step1/:email` to complete your profile.
+  </Step>
+</Steps>
+
+<Note>
+  The JWT expires after **1 hour**. After expiry the token remains in `localStorage` but any server-side verification will reject it. Users are not automatically redirected on expiry — they will only be redirected when `ProtectedRoute` runs its check on the next page load.
+</Note>
+
+## Login flow
+
+<Steps>
+  <Step title="Enter your credentials">
+    Navigate to `/login` and enter the email address and password you registered with.
+  </Step>
+  <Step title="Profile loaded from localStorage">
+    Before the API call the client reads your stored profile:
+
+    ```js LoginForm.js
+    const profile = JSON.parse(localStorage.getItem(email))
+    ```
+
+    This retrieves the `{ username, password }` object saved during registration. The stored `password` value is the bcrypt hash.
+  </Step>
+  <Step title="Credentials sent to the API">
+    The form `POST`s the following body to `/api/auth/login`:
+
+    ```js LoginForm.js
+    const response = await axios.post('/api/auth/login', {
+      username: email,
+      password,
+      user_name: profile.user_name,
+      user_password: profile.password
+    })
+    ```
+
+    The API compares the plain-text `password` against the stored hash using `bcrypt.compare`, then signs a new JWT on match:
+
+    ```js login.js
+    const isMatch = await bcrypt.compare(password, user_password);
+    if (isMatch) {
+      token = jwt.sign({ username: user_name }, SECRET_KEY, { expiresIn: '1h' });
+      res.status(200).json({ token });
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
+    ```
+  </Step>
+  <Step title="Token stored and redirect">
+    The returned JWT is stored via `setToken` and you are redirected to `/dashboard`.
+  </Step>
+</Steps>
+
+## Session management
+
+Three helpers in `utils/auth.js` manage the token in `localStorage`:
+
+```js utils/auth.js
+export const setToken = (token) => {
+  localStorage.setItem('token', token);
+};
+
+export const getToken = () => {
+  return localStorage.getItem('token');
+};
+
+export const removeToken = () => {
+  localStorage.removeItem('token');
+};
+```
+
+The `ProtectedRoute` component calls `getToken()` on mount. If no token is found, it immediately redirects to `/login`:
+
+```jsx ProtectedRoute.js
+const ProtectedRoute = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = getToken();
+
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      router.push('/login'); // Redirect to login if not authenticated
+    }
+    setLoading(false); // Stop loading when check is complete
+  }, [router]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated ? <>{children}</> : null;
+};
+```
+
+## Logout
+
+The **Logout** button on the dashboard calls `localStorage.removeItem('token')` directly and then pushes `/login`:
+
+```js Dashboard.js
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  router.push('/login');
+};
+```
+
+This is equivalent to calling `removeToken()` from `utils/auth.js`.
+
+## Security notes
+
+Passwords are hashed with `bcryptjs` using 12 salt rounds before being stored or transmitted back to the client. JWTs are signed with `SECRET_KEY` and carry a 1-hour expiry.
+
+<Warning>
+  `SECRET_KEY` is **hardcoded** in both `utils/auth.js` and the API handlers:
+
+  ```js
+  export const SECRET_KEY = 'kjsdfj9w3rjwerq2#%5q2349_'; // Store this in an environment variable
+  ```
+
+  This key is committed to source control and visible to anyone with repository access. Move it to an environment variable (e.g. `process.env.JWT_SECRET`) and remove it from source before deploying to any shared or production environment.
+</Warning>

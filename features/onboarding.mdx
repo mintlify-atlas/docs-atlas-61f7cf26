@@ -1,0 +1,77 @@
+---
+title: "Onboarding"
+description: "The guided two-step onboarding flow that personalizes your Glint 247 profile."
+---
+
+After registering, you complete a two-step onboarding flow before reaching the dashboard. Each step collects profile information and saves it to `localStorage` keyed by your email address. The generic `OnboardingStep` component drives both steps.
+
+## How the OnboardingStep component works
+
+`OnboardingStep` accepts a `fields` array, a `title`, an optional `subtitle`, and an optional `nextStep` path:
+
+```jsx OnboardingStep.js
+export default function OnboardingStep({ title, subtitle, fields, nextStep }) {
+  const router = useRouter()
+  const params = useParams()
+  const id = params.id.replace('%40', '@')
+  let user = JSON.parse(localStorage.getItem(id))
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    const data = Object.fromEntries(formData)
+    let user = JSON.parse(localStorage.getItem(id)) || {}
+    localStorage.setItem(id, JSON.stringify({ ...user, ...data }))
+    { nextStep ? router.push(`${nextStep}/${id}`) : router.push('/dashboard') }
+  }
+  // ...
+}
+```
+
+Each field object in the `fields` array has four properties:
+
+| Property   | Type    | Description                              |
+| ---------- | ------- | ---------------------------------------- |
+| `name`     | string  | HTML `name` attribute and `localStorage` key |
+| `label`    | string  | Visible label above the input            |
+| `type`     | string  | HTML input type (e.g. `text`)            |
+| `required` | boolean | Whether the field is required            |
+
+When you click **Continue**, the component merges the new form data into your existing `localStorage` entry and navigates to `nextStep` if provided, or to `/dashboard` if not.
+
+<Info>
+  The URL parameter `:id` holds your email address. Because `@` is not safe in URL paths, it is percent-encoded as `%40`. The component decodes it with `.replace('%40', '@')` to look up your `localStorage` entry correctly. For example, `user@example.com` becomes `user%40example.com` in the URL.
+</Info>
+
+## Onboarding steps
+
+<Steps>
+  <Step title="Step 1 — Name (/onboarding/step1/:email)">
+    The first step uses the title **"Empower your professional growth"** and collects your name:
+
+    ```js step1/[id]/page.js
+    const fields = [
+      { name: 'firstName', label: 'First Name', type: 'text', required: true },
+      { name: 'lastName',  label: 'Last Name',  type: 'text', required: true },
+    ]
+    ```
+
+    Fill in your **First Name** and **Last Name**, then click **Continue**. Your data is merged into your `localStorage` profile and you are sent to `/onboarding/step2/:email`.
+  </Step>
+  <Step title="Step 2 — Location (/onboarding/step2/:email)">
+    The second step greets you by first name — **"Welcome `firstName`!"** — with the subtitle **"Connect with your community through people, jobs, and much more."** It collects your location:
+
+    ```js step2/[id]/page.js
+    const fields = [
+      { name: 'region_country', label: 'Country/Region*', type: 'text', required: true },
+      { name: 'city_district',  label: 'City/District*',  type: 'text', required: true },
+    ]
+    ```
+
+    The page reads `firstName` from the `localStorage` entry created in step 1 to build the personalised greeting. Fill in your **Country/Region** and **City/District**, then click **Continue** to go to `/dashboard`.
+  </Step>
+</Steps>
+
+<Note>
+  All onboarding data is stored only in `localStorage` — there is no server-side profile save during onboarding. Clearing browser data (localStorage, cookies, or site storage) will erase your profile information and you will need to re-register.
+</Note>

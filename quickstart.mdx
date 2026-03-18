@@ -1,80 +1,89 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Create your Glint 247 account and reach your dashboard in minutes."
 ---
 
-## Get started in three steps
-
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+This guide walks you through the full flow — from the landing page to your personal dashboard.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  If you already have an account, Glint 247 stores your JWT token in `localStorage`. Any page that checks for authentication (the landing page, `/join`, and `/login`) will redirect you straight to `/dashboard` if a valid token is found.
 </Note>
+
+<Steps>
+  <Step title="Visit the landing page">
+    Open Glint 247 in your browser. You'll see the **HeaderSection** logo and tagline — *Hub For Creative Minds* — followed by a swipeable carousel.
+
+    The carousel has three frames. The first frame shows two calls to action:
+
+    - **Already a Member?** → Click **SIGN IN** to go to `/login`.
+    - **New to Glint 247?** → Click **JOIN NOW** to go to `/join`.
+
+    Swipe left or right (or use the arrow buttons on frames 2 and 3) to browse the remaining slides. Dot indicators at the bottom of the card show which frame is active.
+  </Step>
+
+  <Step title="Create an account">
+    Navigate to `/join`. You'll see the **Join Us** registration form.
+
+    Fill in the following fields:
+
+    - **Email or phone number** — Enter the email address or phone number you want to use as your username.
+    - **Password (8+ characters)** — Choose a password with at least 8 characters. Click the eye icon to toggle visibility.
+    - **Remember me** (optional) — Check this box to keep your session preferences.
+
+    Click **Agree & Join**. By submitting the form you agree to Glint 247's user agreement and privacy policy.
+
+    On success, the app registers your account via `POST /api/auth/register`, stores your JWT token, and redirects you to the first onboarding step.
+  </Step>
+
+  <Step title="Complete onboarding step 1 — your name">
+    You'll land on `/onboarding/step1/{your-email}`. The page prompts you to **empower your professional growth** by providing:
+
+    - **First Name** (`firstName`) — Required.
+    - **Last Name** (`lastName`) — Required.
+
+    Click **Continue**. Your name is saved to `localStorage` and you move to step 2.
+  </Step>
+
+  <Step title="Complete onboarding step 2 — your location">
+    You'll land on `/onboarding/step2/{your-email}`. The page greets you by your first name and asks you to connect with your community:
+
+    - **Country/Region** (`region_country`) — Required.
+    - **City/District** (`city_district`) — Required.
+
+    Click **Continue**. Your location is saved to `localStorage` and you're redirected to `/dashboard`.
+  </Step>
+
+  <Step title="Access your dashboard">
+    The dashboard greets you with **Welcome to Your Dashboard** and displays four navigation cards:
+
+    | Card | Description |
+    |---|---|
+    | **Profile** | View and edit your profile information |
+    | **Settings** | Manage your account settings |
+    | **Messages** | Check your latest messages |
+    | **Analytics** | View your performance analytics |
+
+    Click any card to navigate to that section. When you're done, click the **Logout** button (top-left, in red) to remove your token and return to `/login`.
+  </Step>
+</Steps>
+
+<Warning>
+  Glint 247 currently stores user profile data — including your name, location, and credentials — in `localStorage`, not a remote database. Clearing your browser data or switching browsers will log you out and remove your profile information. This is a known limitation of the current implementation.
+</Warning>
+
+## What's next
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock" href="/features/authentication">
+    Understand how JWT tokens, bcrypt hashing, and protected routes work under the hood.
+  </Card>
+  <Card title="Onboarding" icon="id-card" href="/features/onboarding">
+    Explore the two-step onboarding flow and how profile data is persisted.
+  </Card>
+  <Card title="Dashboard" icon="gauge" href="/features/dashboard">
+    Learn about the Profile, Settings, Messages, and Analytics sections.
+  </Card>
+  <Card title="Local development" icon="laptop-code" href="/guides/local-development">
+    Run Glint 247 on your own machine for development and testing.
+  </Card>
+</CardGroup>

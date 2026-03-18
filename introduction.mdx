@@ -1,0 +1,57 @@
+---
+title: "Introduction"
+description: "Learn what Glint 247 is and how the platform works."
+---
+
+Glint 247 is a professional networking platform built for creative minds. Its tagline — **Hub For Creative Minds** — reflects its focus: giving designers, developers, writers, and other creative professionals a place to connect, discover opportunities, and grow their careers.
+
+<Info>
+  Glint 247 is built on Next.js 14 with JWT-based authentication and a guided onboarding flow. You can be up and running in minutes — no configuration required.
+</Info>
+
+## How the platform works
+
+Every Glint 247 user follows the same core journey:
+
+1. **Register** — Create an account with your email and a secure password at `/join`.
+2. **Onboard** — A two-step flow collects your name (step 1) and your location (step 2).
+3. **Access the dashboard** — Reach your personal hub with links to Profile, Settings, Messages, and Analytics.
+
+Authenticated sessions are managed with a JWT token stored in `localStorage`. Protected routes automatically redirect unauthenticated users to the login page.
+
+## Key features
+
+- **JWT authentication** — Stateless sessions using signed tokens issued on login and registration.
+- **bcrypt password hashing** — Passwords are hashed with `bcryptjs` before storage; plain-text passwords are never persisted.
+- **Multi-step onboarding** — Collects `firstName`/`lastName` in step 1 and `region_country`/`city_district` in step 2 before granting dashboard access.
+- **Protected routes** — The `ProtectedRoute` component reads the JWT token from `localStorage` and redirects unauthenticated visitors to `/login`.
+- **Swipeable landing carousel** — A three-frame carousel (built with `react-swipeable`) on the home page lets visitors swipe or click through to **Sign In** or **Join Now**.
+- **Responsive Tailwind design** — Every page adapts to mobile and desktop viewports using Tailwind CSS utility classes.
+
+## Technology stack
+
+| Layer | Technology | Version |
+|---|---|---|
+| Framework | Next.js | 14 |
+| UI library | React | 18 |
+| Styling | Tailwind CSS | 3 |
+| Authentication | jsonwebtoken + bcryptjs | — |
+| HTTP client | Axios | — |
+| Carousel | Swiper + react-swipeable | — |
+
+## Explore the documentation
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Create your account and reach your dashboard in minutes.
+  </Card>
+  <Card title="Authentication" icon="lock" href="/features/authentication">
+    Understand registration, login, JWT sessions, and protected routes.
+  </Card>
+  <Card title="Onboarding" icon="id-card" href="/features/onboarding">
+    Learn how the two-step onboarding flow personalizes your profile.
+  </Card>
+  <Card title="Dashboard" icon="gauge" href="/features/dashboard">
+    Explore the Profile, Settings, Messages, and Analytics cards.
+  </Card>
+</CardGroup>

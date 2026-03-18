@@ -1,0 +1,75 @@
+---
+title: "Register"
+description: "Create a new Glint 247 user account."
+---
+
+<Badge color="green">POST</Badge> `/api/auth/register`
+
+Creates a new user account by hashing the provided password and issuing a JWT token. User data is **not** persisted server-side — only the token and hashed password are returned; the client stores them in localStorage.
+
+## Request body
+
+<ParamField body="username" type="string" required>
+  The user's email address or phone number.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's password. Minimum 8 characters recommended.
+</ParamField>
+
+## Response
+
+**201 Created**
+
+<ResponseField name="token" type="string">
+  A JWT bearer token valid for 1 hour, signed with the server's `SECRET_KEY`. Payload: `{ username }`.
+</ResponseField>
+
+<ResponseField name="password" type="string">
+  The bcrypt-hashed password (salt rounds: 12). The client stores this in localStorage for later login verification.
+</ResponseField>
+
+## Error responses
+
+| Status | Description |
+| ------ | ----------- |
+| 405    | Method not allowed — request was not `POST` |
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user@example.com", "password": "mysecretpassword"}'
+```
+
+```js axios
+import axios from 'axios';
+const resp = await axios.post('/api/auth/register', { 
+  username: email, 
+  password 
+});
+// resp.data.token — JWT token
+// resp.data.password — hashed password for localStorage
+```
+
+</CodeGroup>
+
+## Example response
+
+```json 201
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "password": "$2a$12$..."
+}
+```
+
+<Note>
+  After a successful registration, `JoinForm.js` stores the token in localStorage and saves the username and hashed password under the email key. Subsequent logins read this stored data and pass it to `POST /api/auth/login` for verification.
+</Note>
+
+<Warning>
+  This endpoint does not check whether the username is already taken. Registering with an existing username silently overwrites the stored credentials in localStorage.
+</Warning>

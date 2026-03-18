@@ -1,0 +1,85 @@
+---
+title: "Environment variables"
+description: "Configure Glint 247 using environment variables for local and production deployments."
+---
+
+Glint 247 uses environment variables to manage sensitive configuration such as the JWT signing secret. Next.js automatically loads `.env.local` in development, so you do not need any additional tooling to get started.
+
+## Creating a `.env.local` file
+
+Create a `.env.local` file in the project root:
+
+```bash .env.local
+JWT_SECRET=your-super-secret-key-here
+```
+
+<Warning>
+  Never commit `.env.local` to version control. Next.js adds it to `.gitignore` by default, but confirm this is in place before pushing to a remote repository.
+</Warning>
+
+Next.js loads `.env.local` automatically when you run `npm run dev`, `npm run build`, or `npm start`. Variables in this file are available via `process.env.VARIABLE_NAME` in your server-side code.
+
+## Variable reference
+
+<ParamField body="JWT_SECRET" type="string" required>
+  Secret key used to sign and verify JWT tokens for authentication. Replace the hardcoded value currently in `pages/api/auth/login.js`, `pages/api/auth/register.js`, and `utils/auth.js` with this environment variable.
+
+  **Default (hardcoded, insecure):** `kjsdfj9w3rjwerq2#%5q2349_`
+
+  Generate a secure value with:
+
+  ```bash
+  openssl rand -base64 32
+  ```
+</ParamField>
+
+<ParamField body="PORT" type="string">
+  Port on which the Next.js server listens.
+
+  **Default:** `3000`
+
+  ```bash
+  PORT=8080 npm start
+  ```
+</ParamField>
+
+<ParamField body="NODE_ENV" type="string">
+  Runtime environment mode. Next.js sets this automatically during `npm run build` and `npm start`, so you rarely need to set it manually.
+
+  **Default:** `development`
+
+  Set to `production` for production builds and deployments.
+</ParamField>
+
+## Refactoring the hardcoded secret
+
+The application currently has a `SECRET_KEY` hardcoded in three files:
+
+- `pages/api/auth/login.js`
+- `pages/api/auth/register.js`
+- `utils/auth.js`
+
+This is a security risk because the secret is exposed in the source code. Replace each hardcoded assignment with a reference to `process.env.JWT_SECRET`:
+
+```js
+// Before (hardcoded - insecure)
+const SECRET_KEY = 'kjsdfj9w3rjwerq2#%5q2349_';
+
+// After (using environment variable)
+const SECRET_KEY = process.env.JWT_SECRET;
+```
+
+Apply this change in all three files, then set `JWT_SECRET` in `.env.local` for local development and in your hosting platform's environment configuration for production.
+
+<Warning>
+  The hardcoded secret `kjsdfj9w3rjwerq2#%5q2349_` is visible in the repository's commit history. After rotating to a new secret via `JWT_SECRET`, any existing tokens signed with the old value will be invalidated and users will need to log in again.
+</Warning>
+
+## Environment variables in production
+
+For production deployments, set `JWT_SECRET` in your hosting platform's environment configuration rather than in a file:
+
+- **Vercel:** Project → **Settings** → **Environment Variables**
+- **Self-hosted:** Export the variable in your server environment or process manager configuration (e.g., PM2, systemd)
+
+See the [Deployment](/guides/deployment) guide for step-by-step instructions for each hosting option.

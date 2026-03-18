@@ -1,0 +1,97 @@
+---
+title: "Local development"
+description: "Run Glint 247 on your local machine for development and testing."
+---
+
+## Prerequisites
+
+<Columns cols={3}>
+  <Card title="Node.js 18+" icon="node-js">
+    Required by Next.js 14. Download from [nodejs.org](https://nodejs.org).
+  </Card>
+  <Card title="npm" icon="box">
+    Included with Node.js. Used to install dependencies and run scripts.
+  </Card>
+  <Card title="Git" icon="code-branch">
+    Required to clone the repository. Download from [git-scm.com](https://git-scm.com).
+  </Card>
+</Columns>
+
+## Set up the project
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the Glint 247 repository and navigate into the project directory.
+
+    ```bash
+    git clone https://github.com/Rajan08091998/Glint247.git && cd Glint247
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all project dependencies using your preferred package manager.
+
+    <CodeGroup>
+
+    ```bash npm
+    npm install
+    ```
+
+    ```bash yarn
+    yarn install
+    ```
+
+    ```bash pnpm
+    pnpm install
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Set up environment variables">
+    Create a `.env.local` file in the project root. This file stores sensitive configuration that should never be committed to version control.
+
+    ```bash .env.local
+    JWT_SECRET=your-super-secret-key-here
+    ```
+
+    `JWT_SECRET` replaces the hardcoded `SECRET_KEY` value currently embedded in the source code. See [Environment variables](/guides/environment-variables) for details on all available variables and how to refactor the hardcoded secret.
+
+    <Warning>
+      The source files `pages/api/auth/login.js`, `pages/api/auth/register.js`, and `utils/auth.js` contain a hardcoded secret key. You must replace those hardcoded values with `process.env.JWT_SECRET` before deploying to production. Refer to the [Environment variables](/guides/environment-variables) guide for the exact refactoring steps.
+    </Warning>
+  </Step>
+
+  <Step title="Start the development server">
+    Start the Next.js development server.
+
+    ```bash
+    npm run dev
+    ```
+
+    The server starts at [http://localhost:3000](http://localhost:3000) by default.
+
+    <Note>
+      The default port is `3000`. To use a different port, pass the `-p` flag:
+
+      ```bash
+      npm run dev -- -p 4000
+      ```
+    </Note>
+  </Step>
+
+  <Step title="Open the app in your browser">
+    Navigate to [http://localhost:3000](http://localhost:3000) to view the running application.
+
+    The development server supports **hot reloading** — changes you make to files in `app/` and `components/` are reflected in the browser immediately without a manual refresh.
+  </Step>
+</Steps>
+
+## Available npm scripts
+
+| Script | Command | Description |
+|---|---|---|
+| Development server | `npm run dev` | Starts the Next.js dev server with hot reloading |
+| Production build | `npm run build` | Compiles and optimizes the app for production |
+| Production server | `npm run start` | Starts the server using the production build |
+| Lint | `npm run lint` | Runs ESLint using the `next/core-web-vitals` ruleset |

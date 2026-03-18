@@ -1,0 +1,80 @@
+---
+title: "Login"
+description: "Authenticate an existing Glint 247 user and receive a JWT token."
+---
+
+<Badge color="green">POST</Badge> `/api/auth/login`
+
+Authenticates a user by comparing the provided plaintext password against the stored bcrypt hash, then issues a new JWT token.
+
+## Request body
+
+<ParamField body="username" type="string" required>
+  The user's email address or phone number. Used for identification.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's plaintext password to verify.
+</ParamField>
+
+<ParamField body="user_name" type="string" required>
+  The username to embed in the JWT payload. Retrieved from the stored profile in localStorage.
+</ParamField>
+
+<ParamField body="user_password" type="string" required>
+  The bcrypt-hashed password from localStorage. Passed to `bcrypt.compare` on the server.
+</ParamField>
+
+## Response
+
+**200 OK**
+
+<ResponseField name="token" type="string">
+  A JWT bearer token valid for 1 hour. Payload: `{ username: user_name }`.
+</ResponseField>
+
+## Error responses
+
+| Status | Body                                      | Description |
+| ------ | ----------------------------------------- | ----------- |
+| 401    | `{ "message": "Invalid credentials" }`    | The plaintext password does not match the bcrypt hash |
+| 405    | `{ "message": "Method not allowed" }`     | Request was not `POST` |
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user@example.com", "password": "mysecretpassword", "user_name": "user@example.com", "user_password": "$2a$12$..."}'
+```
+
+```js LoginForm.js pattern
+// LoginForm.js pattern
+const profile = JSON.parse(localStorage.getItem(email));
+const response = await axios.post('/api/auth/login', {
+  username: email,
+  password,
+  user_name: profile.user_name,
+  user_password: profile.password
+});
+```
+
+</CodeGroup>
+
+## Example response
+
+```json 200
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+<Note>
+  This endpoint uses an unusual stateless design: the hashed password lives in the client's localStorage rather than a server-side database. The client reads the stored hash and sends it as `user_password` so the server can run `bcrypt.compare` without any database lookup.
+</Note>
+
+<Info>
+  The JWT payload contains `username: user_name` — this is the `user_name` field from the stored profile, not necessarily the email address used to identify the account.
+</Info>

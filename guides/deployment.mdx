@@ -1,0 +1,144 @@
+---
+title: "Deployment"
+description: "Deploy Glint 247 to production using Vercel or a self-hosted Node.js server."
+---
+
+<Note>
+  Glint 247 stores user data in `localStorage` on the client — there is no server-side database. You do not need to provision or configure a database before deploying.
+</Note>
+
+## Build for production
+
+Before deploying, create an optimized production build:
+
+```bash
+npm run build
+```
+
+Once the build succeeds, start the production server locally to verify everything works:
+
+```bash
+npm start
+```
+
+The server listens on port `3000` by default.
+
+## Deploy to Vercel (recommended)
+
+Vercel is the recommended hosting platform for Next.js applications. It provides zero-configuration deployments, automatic HTTPS, and built-in CDN.
+
+<Steps>
+  <Step title="Install the Vercel CLI">
+    ```bash
+    npm install -g vercel
+    ```
+  </Step>
+
+  <Step title="Authenticate with Vercel">
+    Log in to your Vercel account from the terminal.
+
+    ```bash
+    vercel login
+    ```
+  </Step>
+
+  <Step title="Deploy the project">
+    Run the following command from the project root. Vercel detects Next.js automatically and configures the build settings for you.
+
+    ```bash
+    vercel
+    ```
+
+    Follow the interactive prompts to link or create a Vercel project. On completion, Vercel outputs a preview URL.
+  </Step>
+
+  <Step title="Set environment variables">
+    In the **Vercel dashboard**, go to your project, then navigate to **Settings → Environment Variables**.
+
+    Add the following variable:
+
+    | Name | Value | Environments |
+    |---|---|---|
+    | `JWT_SECRET` | A strong, randomly generated secret | Production, Preview, Development |
+
+    <Tip>
+      Generate a secure secret with OpenSSL:
+
+      ```bash
+      openssl rand -base64 32
+      ```
+
+      Copy the output and use it as your `JWT_SECRET` value.
+    </Tip>
+
+    <Warning>
+      Always set a strong, random `JWT_SECRET` in production. The default hardcoded value in the source code is publicly known and must never be used in a live environment.
+    </Warning>
+  </Step>
+
+  <Step title="Redeploy to apply the environment variable">
+    After saving the environment variable, trigger a new deployment for the change to take effect.
+
+    ```bash
+    vercel --prod
+    ```
+  </Step>
+</Steps>
+
+## Self-hosted deployment
+
+You can run Glint 247 on any server with Node.js 18+ installed.
+
+<Steps>
+  <Step title="Build and start the server">
+    On your server, run the build and then start the production server:
+
+    <CodeGroup>
+
+    ```bash Build and start
+    npm run build && npm start
+    ```
+
+    ```bash Separate commands
+    npm run build
+    npm start
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Configure the port (optional)">
+    By default, Next.js listens on port `3000`. Set the `PORT` environment variable to use a different port:
+
+    ```bash
+    PORT=8080 npm start
+    ```
+  </Step>
+
+  <Step title="Set environment variables on the server">
+    Set `JWT_SECRET` in your server environment before starting the application. The exact method depends on your hosting setup:
+
+    ```bash
+    export JWT_SECRET="your-strong-random-secret"
+    npm start
+    ```
+
+    For persistent configuration, add the variable to your server's environment management system (e.g., systemd unit file, `.bashrc`, or a process manager like PM2).
+
+    <Tip>
+      Generate a secure secret:
+
+      ```bash
+      openssl rand -base64 32
+      ```
+    </Tip>
+
+    <Warning>
+      Always set a strong, random `JWT_SECRET` in production. Never use the hardcoded default value from the source code in a live environment.
+    </Warning>
+  </Step>
+</Steps>
+
+## Environment variables for production
+
+Refer to the [Environment variables](/guides/environment-variables) guide for a complete list of variables and instructions on refactoring the hardcoded secret out of the source code.
