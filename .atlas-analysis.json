@@ -1,0 +1,69 @@
+{
+  "projectType": "saas",
+  "projectName": "Glint 247",
+  "projectDescription": "A professional networking platform built with Next.js that connects creative minds through user profiles, community discovery, and professional growth tools.",
+  "theme": "almond",
+  "primaryColor": "#e5e3a3",
+  "lightColor": "#7c7c7c",
+  "darkColor": "#0b0b0b",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/authentication",
+              "features/onboarding",
+              "features/dashboard"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/local-development",
+              "guides/deployment",
+              "guides/environment-variables"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api/auth/register",
+              "api/auth/login"
+            ]
+          },
+          {
+            "group": "User",
+            "pages": [
+              "api/user/get-user"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "User registration and authentication with JWT tokens",
+    "Multi-step onboarding flow (name, location)",
+    "Protected dashboard with profile, settings, messages, and analytics cards",
+    "Swipeable landing page carousel with call-to-action slides",
+    "Password hashing with bcryptjs",
+    "Token-based session management via localStorage"
+  ],
+  "publicApiSurface": [
+    "POST /api/auth/register",
+    "POST /api/auth/login",
+    "GET /api/user"
+  ]
+}
