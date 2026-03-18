@@ -18,7 +18,7 @@ Authenticates a user by comparing the provided plaintext password against the st
 </ParamField>
 
 <ParamField body="user_name" type="string" required>
-  The username to embed in the JWT payload. Retrieved from the stored profile in localStorage.
+  The username to embed in the JWT payload. The client reads this from the stored profile in localStorage as `profile.user_name`. Note: the registration flow stores the profile as `{ username, password }` — the key is `username`, not `user_name`. As a result, this field is currently `undefined` in practice, causing the issued JWT to contain `{ username: undefined }`. This is a known bug in the source code.
 </ParamField>
 
 <ParamField body="user_password" type="string" required>
@@ -75,6 +75,6 @@ const response = await axios.post('/api/auth/login', {
   This endpoint uses an unusual stateless design: the hashed password lives in the client's localStorage rather than a server-side database. The client reads the stored hash and sends it as `user_password` so the server can run `bcrypt.compare` without any database lookup.
 </Note>
 
-<Info>
-  The JWT payload contains `username: user_name` — this is the `user_name` field from the stored profile, not necessarily the email address used to identify the account.
-</Info>
+<Warning>
+  Due to a mismatch between how the registration flow stores the profile (`{ username, password }`) and how the login form reads it (`profile.user_name`), the `user_name` field is always `undefined` in the current implementation. The JWT issued on successful login therefore contains `{ username: undefined }`. To fix this, the login form should use `profile.username` instead of `profile.user_name`.
+</Warning>

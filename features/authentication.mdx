@@ -64,7 +64,7 @@ Glint 247 uses JSON Web Tokens (JWT) for authentication, bcryptjs for password h
     const response = await axios.post('/api/auth/login', {
       username: email,
       password,
-      user_name: profile.user_name,
+      user_name: profile.user_name,   // undefined — stored profile uses 'username' key
       user_password: profile.password
     })
     ```
@@ -80,6 +80,10 @@ Glint 247 uses JSON Web Tokens (JWT) for authentication, bcryptjs for password h
       res.status(401).json({ message: 'Invalid credentials' });
     }
     ```
+
+    <Warning>
+      The registration form (`JoinForm.js`) stores the profile object as `{ username: email, password: hashedPassword }`, but the login form reads `profile.user_name` — a key that does not exist in the stored object. As a result, `user_name` is `undefined` in the login request body, and the JWT payload will contain `{ username: undefined }`. This is a known bug in the current source code.
+    </Warning>
   </Step>
   <Step title="Token stored and redirect">
     The returned JWT is stored via `setToken` and you are redirected to `/dashboard`.
